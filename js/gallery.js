@@ -36,7 +36,7 @@ function createGalleryCardsMarkup(gallery) {
     .join('');
 }
 
-// Открываем модалку
+// Открывает модальное окно
 function openModal(evt) {
   evt.preventDefault();
 
@@ -55,4 +55,70 @@ function openModal(evt) {
   window.addEventListener('keydown', onPressEsc);
   overlayRef.addEventListener('click', closeModal);
   closeBtn.addEventListener('click', closeModal);
+}
+
+// Закрывает модальное окно
+
+function closeModal(evt) {
+  bodyRef.classList.remove('scroll-hidden'); 
+
+  lightboxRef.classList.remove('is-open');
+  lightboxImgRef.src = '';
+  lightboxImgRef.alt = '';
+
+  overlayRef.removeEventListener('click', closeModal);
+  closeBtn.removeEventListener('click', closeModal);
+  window.removeEventListener('keydown', onArrowLeft);
+  window.removeEventListener('keydown', onArrowRight);
+  window.removeEventListener('keydown', onPressEsc);
+}
+// Пролистывание галереи
+
+let indexCurrentElem;
+function findCurrentIndex() {
+  gallery.forEach((elem, index) => {
+    if (elem.description === lightboxImgRef.getAttribute('alt')) {
+      return (indexCurrentElem = index);
+    }
+  });
+}
+
+//Влево
+function toThePrevious() {
+  findCurrentIndex();
+  if (indexCurrentElem === 0) {
+    indexCurrentElem = gallery.length;
+  }
+  lightboxImgRef.src = gallery[indexCurrentElem - 1].original;
+  lightboxImgRef.alt = gallery[indexCurrentElem - 1].description;
+  return lightboxImgRef;
+}
+
+//Вправо
+function toTheNext() {
+  findCurrentIndex();
+  if (indexCurrentElem === gallery.length - 1) {
+    indexCurrentElem = -1;
+  }
+  lightboxImgRef.src = gallery[indexCurrentElem + 1].original;
+  lightboxImgRef.alt = gallery[indexCurrentElem + 1].description;
+  return lightboxImgRef;
+}
+
+function onArrowLeft(evt) {
+  if (evt.code === 'ArrowLeft') {
+    toThePrevious();
+  }
+}
+
+function onArrowRight(evt) {
+  if (evt.code === 'ArrowRight') {
+    toTheNext();
+  }
+}
+
+function onPressEsc(evt) {
+  if (evt.code === 'Escape') {
+    closeModal();
+  }
 }
